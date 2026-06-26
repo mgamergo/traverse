@@ -19,8 +19,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.1",
 		"@types/bun": "latest",
-		"@types/turndown": "^5.0.6",
-		"playwright": "^1.61.1"
+		"@types/turndown": "^5.0.6"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
@@ -30,6 +29,7 @@
 		"@types/jsdom": "^28.0.3",
 		"cheerio": "^1.2.0",
 		"jsdom": "^29.1.1",
+		"playwright": "^1.61.1",
 		"turndown": "^7.2.4",
 		"yaml": "^2.9.0"
 	}

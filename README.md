@@ -238,10 +238,14 @@ For the HTTP service, use a long-running web service platform such as Railway or
 Railway:
 
 ```text
-Start command: bun run server
+Builder: Dockerfile
+Start command: bun apps/server/index.ts
 ```
 
-The server reads Railway's injected `PORT` automatically.
+The included `Dockerfile` installs Playwright's Chromium browser and Linux
+dependencies during image build. This is required when using
+`config.fetch_source: "playwright"` in the HTTP API. The server reads Railway's
+injected `PORT` automatically.
 
 Render or Docker:
 
@@ -252,6 +256,7 @@ WORKDIR /app
 
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
+RUN bunx playwright install --with-deps chromium
 
 COPY . .
 

@@ -1,0 +1,11 @@
+.git
+.traverse-state
+node_modules
+output
+output-*
+docs
+*.requests.csv
+http.requests.csv
+coverage
+.env
+.env.*
