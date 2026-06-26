@@ -1,0 +1,36 @@
+{
+	"name": "traverse",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "bun --watch apps/cli/index.ts",
+		"start": "bun run apps/cli/index.ts",
+		"server": "bun run apps/server/index.ts",
+		"scrape": "bun run apps/cli/index.ts scrape",
+		"crawl": "bun run apps/cli/index.ts crawl",
+		"build:cli": "bun build apps/cli/index.ts --compile --outfile traverse",
+		"build:server": "bun build apps/server/index.ts --compile --outfile traverse-server",
+		"validate": "bun run apps/cli/index.ts validate-config",
+		"lint": "biome check .",
+		"format": "biome check --write .",
+		"typecheck": "bunx tsc --noEmit"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.1",
+		"@types/bun": "latest",
+		"@types/turndown": "^5.0.6",
+		"playwright": "^1.61.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@mozilla/readability": "^0.6.0",
+		"@types/jsdom": "^28.0.3",
+		"cheerio": "^1.2.0",
+		"jsdom": "^29.1.1",
+		"turndown": "^7.2.4",
+		"yaml": "^2.9.0"
+	}
+}

@@ -1,0 +1,79 @@
+{
+	"startUrls": ["https://quotes.toscrape.com"],
+	"crawler": true,
+	"outputDir": "output",
+	"baseOutputDir": "output",
+	"stateDir": ".traverse-state",
+	"maxPages": 10,
+	"maxDepth": 2,
+	"strategy": "bfs",
+	"scope": "same-domain",
+	"allowedDomains": [],
+	"includePatterns": [],
+	"excludePatterns": [
+		"\\.(?:jpg|jpeg|png|gif|webp|svg|ico|pdf|docx?|xlsx?|pptx?|zip|rar|7z|mp4|mp3|mov|avi)(?:\\?|$)",
+		"/(?:admin|login|logout|cart|checkout)(?:/|$)"
+	],
+	"concurrency": 4,
+	"perDomainConcurrency": 1,
+	"renderMode": "auto",
+	"browserEngine": "chromium",
+	"headless": true,
+	"blockResources": ["image", "font", "media"],
+	"wait": {
+		"until": "domcontentloaded",
+		"timeoutMs": 30000
+	},
+	"infiniteScroll": {
+		"enabled": false,
+		"stepPx": 900,
+		"maxScrolls": 8,
+		"waitMs": 600
+	},
+	"screenshots": false,
+	"pdf": false,
+	"rawHtml": false,
+	"jsonSidecar": true,
+	"consolidatedOutput": false,
+	"mirrorUrlStructure": false,
+	"dryRun": false,
+	"respectRobotsTxt": true,
+	"useSitemap": true,
+	"sitemapOnly": false,
+	"checkpointIntervalMs": 2000,
+	"requestTimeoutMs": 30000,
+	"maxRedirects": 10,
+	"delay": {
+		"minMs": 400,
+		"maxMs": 2500,
+		"curve": 2.4
+	},
+	"globalRateLimitRps": 2,
+	"perDomainMinDelayMs": 1000,
+	"userAgentRotation": "per-session",
+	"referrer": "previous",
+	"proxies": [],
+	"proxyRotation": "round-robin",
+	"proxyHealthEndpoint": "https://httpbin.org/ip",
+	"proxyFailoverRetries": 1,
+	"captcha": {
+		"enabled": false
+	},
+	"selectors": {
+		"headline": {
+			"selector": "h1",
+			"type": "text"
+		}
+	},
+	"xpaths": {},
+	"downloadImages": false,
+	"linkMode": "inline",
+	"imageMode": "keep",
+	"imageMinArea": 10000,
+	"filterLanguages": [],
+	"redactPii": false,
+	"minQualityScore": 0,
+	"logLevel": "info",
+	"requestCsv": true,
+	"domains": {}
+}
