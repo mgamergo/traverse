@@ -45,9 +45,8 @@ export class Extractor {
 		const openGraph = extractPrefixedMeta($, "og:");
 		const twitter = extractPrefixedMeta($, "twitter:");
 		const structuredData = extractJsonLd($);
-		const readabilityHtml = runReadability(html, fetchResult.finalUrl);
 		const mainHtml = cleanBoilerplate(
-			readabilityHtml || selectMainHtml($),
+			selectContentHtml(html, $, fetchResult.finalUrl),
 			fetchResult.finalUrl,
 		);
 		const content = cheerio.load(mainHtml);
@@ -62,12 +61,17 @@ export class Extractor {
 		};
 		let markdown = this.toMarkdown(mainHtml);
 		const faqMarkdown = faqPageToMarkdown(structuredData);
-		if (faqMarkdown && !markdown.includes(faqMarkdown.questions[0] ?? "")) {
+		const firstFaqQuestion = faqMarkdown?.questions[0] ?? "";
+		const hasVisibleFaq = firstFaqQuestion
+			? markdown.includes(firstFaqQuestion)
+			: false;
+		if (faqMarkdown && !hasVisibleFaq) {
 			markdown = `${markdown.trim()}\n\n${faqMarkdown.markdown}`;
 		}
 		markdown = normalizeMarkdown(markdown, this.config);
 		let text = dedupeBlocks(cleanText(content.text()));
-		if (faqMarkdown) text = dedupeBlocks(`${text}\n\n${faqMarkdown.text}`);
+		if (faqMarkdown && !hasVisibleFaq)
+			text = dedupeBlocks(`${text}\n\n${faqMarkdown.text}`);
 		const pii = detectPii(text);
 		if (this.config.redactPii) {
 			text = redactPii(text);
@@ -165,6 +169,22 @@ export class Extractor {
 	}
 }
 
+function selectContentHtml(
+	html: string,
+	$: cheerio.CheerioAPI,
+	url: string,
+): string {
+	const fallbackHtml = selectMainHtml($);
+	const readabilityHtml = runReadability(html, url);
+	if (!readabilityHtml) return fallbackHtml;
+
+	const fallbackScore = contentScore(fallbackHtml);
+	const readabilityScore = contentScore(readabilityHtml);
+	if (isSparseReadabilityResult(readabilityScore, fallbackScore))
+		return fallbackHtml;
+	return readabilityHtml;
+}
+
 function runReadability(html: string, url: string): string | undefined {
 	try {
 		const dom = new JSDOM(html, { url });
@@ -173,6 +193,24 @@ function runReadability(html: string, url: string): string | undefined {
 	} catch {
 		return undefined;
 	}
+}
+
+function contentScore(html: string): { words: number; chars: number } {
+	const $ = cheerio.load(html);
+	const text = cleanText($("body").text() || $.root().text());
+	return {
+		words: countWords(text),
+		chars: text.length,
+	};
+}
+
+function isSparseReadabilityResult(
+	readability: { words: number; chars: number },
+	fallback: { words: number; chars: number },
+): boolean {
+	if (fallback.words < 80) return false;
+	if (readability.words < 50) return true;
+	return readability.words < fallback.words * 0.35;
 }
 
 function selectMainHtml($: cheerio.CheerioAPI): string {
@@ -208,7 +246,7 @@ function selectMainHtml($: cheerio.CheerioAPI): string {
 function cleanBoilerplate(html: string, baseUrl: string): string {
 	const $ = cheerio.load(html);
 	$("script, style, noscript, iframe, svg, canvas").remove();
-	$("button, input, select, textarea").remove();
+	$("input, select, textarea").remove();
 	$(
 		".cookie, .cookies, .banner, .modal, .popup, .ad, .ads, .advertisement, .newsletter, .subscribe, .share, .comments, .powered-by",
 	).remove();
@@ -753,5 +791,8 @@ function numberAttr(value: string | undefined): number | undefined {
 }
 
 export const extractorInternals = {
+	contentScore,
 	decodeEntities,
+	isSparseReadabilityResult,
+	selectContentHtml,
 };
